@@ -1,0 +1,13 @@
+---
+parameters:
+  - name: source_folder_path
+    type: string
+    default: 'node-hello' 
+
+steps:
+- task: Npm@1
+  displayName: 'Run command: npm install'
+  inputs:
+    command: install
+    workingDir: '$(Build.SourcesDirectory)/${{ parameters.source_folder_path }}'
+    verbose: false

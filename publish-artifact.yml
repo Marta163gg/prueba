@@ -1,0 +1,30 @@
+---
+parameters:
+  - name: publish_folder_name
+    type: string
+    default: 'publish'
+  - name: source_folder_path
+    type: string
+    default: 'src'
+  - name: artifact_name
+    type: string
+    default: 'artifactCI' 
+
+steps:
+- task: CopyFiles@2 
+  displayName: 'Copy files to: $(Pipeline.Workspace)/${{ parameters.publish_folder_name }}'
+  inputs:
+    sourceFolder: '$(Build.SourcesDirectory)/${{ parameters.source_folder_path }}'
+    contents: |
+      **.js
+      **.json
+    targetFolder: '$(Pipeline.Workspace)/${{ parameters.publish_folder_name }}'
+    overWrite: true
+    flattenFolders: true
+
+- task: PublishPipelineArtifact@1
+  displayName: 'Publish Artifact: ${{ parameters.artifact_name }}'
+  inputs:
+    targetPath: '$(Pipeline.Workspace)/${{ parameters.publish_folder_name }}'
+    artifactName: '${{ parameters.artifact_name }}'
+    artifactType: 'pipeline'

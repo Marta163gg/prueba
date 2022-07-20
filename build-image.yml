@@ -1,0 +1,22 @@
+---
+parameters:
+  - name: azure_container_registry
+    type: string
+    default: 'service connection id' 
+  - name: container_repository_name
+    type: string
+    default: 'eco-fdh/nombre_repositorio'
+  - name: dockerfile_path
+    type: string
+    default: 'Dockerfile'
+ 
+steps:
+- task: Docker@2
+  displayName: 'Build and push an image to ACR'
+  inputs:
+    containerRegistry: '${{ parameters.azure_container_registry }}'
+    repository: '${{ parameters.container_repository_name }}'
+    command: 'buildAndPush'
+    Dockerfile: '$(Build.SourcesDirectory)/${{ parameters.dockerfile_path }}'
+    buildContext: '**'
+    tags: '$(Build.BuildId)'

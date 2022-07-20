@@ -1,0 +1,42 @@
+---
+parameters:
+  - name: snyk_service_connection_endpoint
+    type: string
+    default: 'Snyk - snyk@ecoembes.com' #De momento parece reutilizable. Solo faltaría nos dieran visibilidad a esta SC en el proyecto "Migracion FdH a Cloud Ecoembes"
+  - name: azure_container_repository_url
+    type: string
+    default: 'ecoazne1acr1.azurecr.io'
+  - name: image_name
+    type: string
+    default: 'eco-fdh/dummy'
+  - name: snyk_container_project_name
+    type: string
+    default: 'RECICLOS - Client container' #Para escanear imágenes en contenedores de ACR, se necesita un nombre de ese estilo. Nos lo tienen que crear.
+  - name: snyk_app_project_name
+    type: string
+    default: 'RECICLOS - Client app' #Para escanear aplicaciones del tipo NodeJS, se necesita un nombre de ese estilo. Nos lo tienen que crear.
+  - name: snyk_organization_id
+    type: string
+    default: '3eb2aa27-65eb-45ab-9de1-ddc678f2b807' #Pendiente de confirmar, nos tienen que crar una organización nueva (EC.Apps.FdH) y darnos su id
+ 
+steps:
+- task: SnykSecurityScan@1
+  displayName: 'Snyk static code analysis for container image'
+  inputs:
+    serviceConnectionEndpoint: '${{ parameters.snyk_service_connection_endpoint }}'
+    testType: 'container'
+    dockerImageName: '${{ parameters.azure_container_repository_url }}/${{ parameters.image_name }}:$(Build.BuildId)'
+    monitorWhen: 'always'
+    failOnIssues: false
+    projectName: '${{ parameters.snyk_container_project_name }}'
+    organization: '${{ parameters.snyk_organization_id }}'
+
+- task: SnykSecurityScan@1
+  displayName: 'Snyk static code analysis for NodeJS app'
+  inputs:
+    serviceConnectionEndpoint: '${{ parameters.snyk_service_connection_endpoint }}'
+    testType: 'app'
+    monitorWhen: 'always'
+    failOnIssues: false
+    projectName: '${{ parameters.snyk_app_project_name }}'
+    organization: '${{ parameters.snyk_organization_id }}'

@@ -1,0 +1,35 @@
+---
+parameters:
+  - name: azure_subscription
+    type: string
+    default: 'minsait-pro-ecoembes con SP de AzureDevOps (40ae6b25)-Migración FdH a Cloud Ecoembes' 
+  - name: azure_resource_group
+    type: string
+    default: 'ECO_AZNE1_AKS'
+  - name: kubernetes_cluster
+    type: string
+    default: 'ECOAZNE1_AKS'
+  - name: kubernetes_namespace
+    type: string
+    default: 'eco-fdh-des'
+  - name: chart_helm_folder_path
+    type: string
+    default: 'helm' 
+
+steps:
+- task: HelmInstaller@1
+  displayName: 'Install latest Helm version'
+  inputs: 
+    helmVersionToInstall: latest
+
+- task: HelmDeploy@0
+  displayName: 'Run command: helm install'
+  inputs:
+    azureSubscription: '${{ parameters.azure_subscription }}'
+    azureResourceGroup: '${{ parameters.azure_resource_group }}'
+    kubernetesCluster: '${{ parameters.kubernetes_cluster }}'
+    namespace: '${{ parameters.kubernetes_namespace }}'
+    command: install
+    chartType: FilePath
+    chartPath: '$(Build.SourcesDirectory)/${{ parameters.chart_helm_folder_path }}'
+    overrideValues: 'image.tag=$(Build.BuildId)'

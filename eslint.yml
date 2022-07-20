@@ -1,0 +1,14 @@
+---
+parameters:
+  - name: source_folder_path
+    type: string
+    default: 'node-hello' 
+
+steps:
+- task: Npm@1
+  displayName: 'Run command: npm lint'
+  inputs:
+    command: custom
+    workingDir: '$(Build.SourcesDirectory)/${{ parameters.source_folder_path }}'
+    verbose: false
+    customCommand: 'run lint'
